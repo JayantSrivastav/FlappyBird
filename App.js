@@ -1,23 +1,36 @@
 import { Canvas, useImage, Image } from "@shopify/react-native-skia";
 import { useWindowDimensions } from "react-native";
 // @ts-ignore
-import React from "react";
+import React, { useEffect } from "react";
+import {
+  useSharedValue,
+  withTiming,
+  Easing,
+  withSequence,
+  withRepeat,
+} from "react-native-reanimated";
 
 const App = () => {
   const { width, height } = useWindowDimensions();
-
-  // @ts-ignore
   const bg = useImage(require("./assets/sprites/background-day.png"));
-  // @ts-ignore
   const bird = useImage(require("./assets/sprites/yellowbird-upflap.png"));
-  // @ts-ignore
   const pipeBottom = useImage(require("./assets/sprites/pipe-green.png"));
-  // @ts-ignore
   const pipeTop = useImage(require("./assets/sprites/pipe-green-top.png"));
-  // @ts-ignore
+
+  const x = useSharedValue(width);
+
+  useEffect(() => {
+    x.value = withRepeat(
+      withSequence(
+        withTiming(-150, { duration: 3000, easing: Easing.linear }),
+        withTiming(width, { duration: 0 })
+      ),
+      -1
+    );
+  }, []);
   // const r = width * 0.33;
   const pipeOfSet = 0;
-  // @ts-ignore
+
   const base = useImage(require("./assets/sprites/base.png"));
   return (
     <Canvas style={{ width, height }}>
@@ -26,14 +39,14 @@ const App = () => {
       <Image
         image={pipeTop}
         y={pipeOfSet - 320}
-        x={width / 2}
+        x={x}
         width={103}
         height={640}
       />
       <Image
         image={pipeBottom}
         y={height - 320 + pipeOfSet}
-        x={width / 2}
+        x={x}
         width={103}
         height={640}
       />
